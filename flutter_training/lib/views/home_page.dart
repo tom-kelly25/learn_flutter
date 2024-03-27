@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_training/models/post.dart';
+import 'package:flutter_training/services/remote_service.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -20,7 +21,12 @@ class _homePageState extends State<homePage> {
   }
 
   getData()async{
-    //posts = await
+    posts = await RemoteService().getPosts();
+    if (posts != null){
+      setState(() {
+        isLoaded = true;
+      });
+    }
   }
 
 
@@ -31,13 +37,18 @@ class _homePageState extends State<homePage> {
         title:const Text('Posts'),
         ),
       
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context,index) {
-        return Container(
-          child: Text('Hi'),
-        );
-      },
+      body: Visibility(
+        visible: isLoaded,
+        replacement: const Center(child: CircularProgressIndicator(),
+        ),
+        child: ListView.builder(
+          itemCount: posts?.length,
+          itemBuilder: (context,index) {
+          return Container(
+            child: Text(posts![index].title),
+          );
+        },
+        ),
       ),
       );
   }
